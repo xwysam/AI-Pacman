@@ -679,6 +679,6 @@ if __name__ == '__main__':
     args = readCommand( sys.argv[1:] ) # Get game components based on input
     runGames( **args )
 
-    # import cProfile
-    # cProfile.run("runGames( **args )")
+#    import cProfile
+#    cProfile.run("runGames( **args )")
     pass

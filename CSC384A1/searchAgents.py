@@ -318,8 +318,8 @@ class CornersProblem(search.SearchProblem):
         "*** YOUR CODE HERE ***"
         #util.raiseNotDefined()
 
-        isgoal = list(state[1])
-        return len(isgoal) == 4
+        goal = list(state[1])
+        return len(goal) == 4
 
     def getSuccessors(self, state):
         """
@@ -396,12 +396,12 @@ def cornersHeuristic(state, problem):
 
     for j in untouchedCorners:
         dis_lst = []
+        untouchedCorners.remove(j)
+
         for i in untouchedCorners:
-            if j != i:
-                distence = util.manhattanDistance(i,j)
-                dis_lst.append(distence)
-            if state[0] in untouchedCorners:
-                untouchedCorners.remove(state[0])
+            distence = mazeDistance(i,j,problem)
+            dis_lst.append(distence)
+
         if dis_lst != []:
             total_distance += min(dis_lst)
     return total_distance
@@ -428,9 +428,16 @@ class FoodSearchProblem:
         self.startingGameState = startingGameState
         self._expanded = 0 # DO NOT CHANGE
         self.heuristicInfo = {} # A dictionary for the heuristic to store information
+        self.getPacmanPosition = startingGameState.getPacmanPosition
 
     def getStartState(self):
         return self.start
+
+    def getWalls(self):
+        return self.walls
+
+    def getPacmanPosition(self):
+        return self.getPacmanPosition
 
     def isGoalState(self, state):
         return state[1].count() == 0
@@ -497,26 +504,25 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    distance = 0
-    foodPostions = foodGrid.asList()
-    visitedFood = []
+    foodList = foodGrid.asList()
+    total_distance = 0
 
-    for i in foodPostions:
-        distance += findShortestFoodPoint(position, foodPostions, visitedFood, problem)
-        position = i
-        visitedFood.append(i)
+    untouchedfood = []
+    untouchedfood.append(position)
 
-    return distance
+    for i in foodList:
+        if i not in state[1]:
+            untouchedfood.append(i)
 
-def findShortestFoodPoint(position, foodPostions, visitedFood, problem):
-    distance = []
-
-    for i in foodPostions:
-        if i not in visitedFood:
-            distance.append(mazeDistance(position,i,problem.startingGameState))
-
-    return min(distance)
-
+    for j in untouchedfood:
+        untouchedfood.remove(j)
+        dis_lst = []
+        for i in untouchedfood:
+            distence = util.manhattanDistance(i,j)
+            dis_lst.append(distence)
+        if dis_lst != []:
+            total_distance += min(dis_lst)
+    return total_distance
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
